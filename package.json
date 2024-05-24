@@ -1,0 +1,34 @@
+{
+  "name": "@incharge/transcript-core",
+  "version": "v0.0.4-alpha.1",
+  "description": "Work in progress - Core types and classes for transcripts",
+  "author": "Julian Price, inCharge Ltd, UK",
+  "license": "ISC",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "compile": "tsc && tsc -p tsconfig-cjs.json",
+    "prepublishOnly": "npm run compile",
+    "link": "npm link",
+    "watch": "npx nodemon -e ts --watch src --exec \"npm run compile\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "typescript": "^5.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12"
+  }
+}
