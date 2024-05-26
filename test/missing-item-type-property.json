@@ -1,0 +1,17 @@
+{
+	"results": {
+		"items": [
+		      {
+			"alternatives": [
+			  {
+			    "confidence": "0.999",
+			    "content": "most"
+			  }
+			],
+			"start_time": "5062.06",
+			"end_time": "5062.379",
+			"speaker_label": "spk_1"
+		      }
+		]
+	}
+}

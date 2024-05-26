@@ -1,0 +1,50 @@
+{
+	"results": {
+		"items": [
+		      {
+			"type": "pronunciation",
+			"alternatives": [
+			  {
+			    "confidence": "0.999",
+			    "content": "Hello"
+			  }
+			],
+			"start_time": "0.75",
+			"end_time": "1.139",
+			"speaker_label": "spk_0"
+		      },
+		      {
+			"type": "punctuation",
+			"alternatives": [
+			  {
+			    "confidence": "0.0",
+			    "content": ","
+			  }
+			],
+			"speaker_label": "spk_0"
+		      },
+		      {
+			"type": "punctuation",
+			"alternatives": [
+			  {
+			    "confidence": "0.0",
+			    "content": ","
+			  }
+			],
+			"speaker_label": "spk_0"
+		      },
+		      {
+			"type": "pronunciation",
+			"alternatives": [
+			  {
+			    "confidence": "0.998",
+			    "content": "everybody"
+			  }
+			],
+			"start_time": "1.149",
+			"end_time": "1.809",
+			"speaker_label": "spk_0"
+		      }
+		]
+	}
+}

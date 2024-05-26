@@ -1,0 +1,18 @@
+{
+	"results": {
+		"items": [
+		    {
+				"type": "pronunciation",
+				"alternatives": [
+				{
+					"confidence": "0.999",
+					"content": "Hello"
+				}
+				],
+				"start_time": "1.23",
+				"end_time": "3.45",
+				"speaker_label": "spk_1"
+		    }
+		]
+	}
+}

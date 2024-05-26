@@ -1,17 +1,18 @@
 {
   "name": "@incharge/transcript-core",
-  "version": "0.0.4-alpha.3",
+  "version": "0.0.4-alpha.5",
   "description": "Work in progress - Core types and classes for transcripts",
   "author": "Julian Price, inCharge Ltd, UK",
   "license": "ISC",
   "type": "module",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
+  "unpkg": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js"
     }
   },
   "files": [
@@ -20,13 +21,29 @@
   "scripts": {
     "clean": "rm -rf dist",
     "compile": "tsc && tsc -p tsconfig-cjs.json",
-    "prepublishOnly": "npm run compile",
+    "prepublishOnly": "npm run clean && npm run build",
     "link": "npm link",
     "watch": "npx nodemon -e ts --watch src --exec \"npm run compile\" && exit 1",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest --ui",
+    "dev": "vite --host 0.0.0.0 --port 8888",
+    "vite-build": "vite build --config vite.demo.config.js",
+    "build": "vite build --config vite.demo.config.js && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/incharge/transcript-core"
   },
   "devDependencies": {
+    "@types/node": "^20.12.12",
+    "@vitest/ui": "^1.6.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5",
-    "@types/node": "^20.12.12"
+    "vite": "^5.2.11",
+    "vite-plugin-banner": "^0.7.1",
+    "vite-plugin-dts": "^3.9.1",
+    "vitest": "^1.6.0"
   }
 }
