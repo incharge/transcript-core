@@ -130,7 +130,14 @@ interface AwsTranscriptAlternative {
       return undefined;
   }
   
+    function isLowerCase(word: string) {
+        const letter = word.charAt(0);
+        return letter == letter.toLowerCase() && letter != letter.toUpperCase();
+    }
+
   export function awsToIcLines(awsTranscript: AwsTranscript): Array<TranscriptLine> | Error {
+      const fillerWords: Array<string> = ["um", "uh", "mhm"];
+    
       let validationResult: Error | undefined;
   
       validationResult = validateAwsTranscript(awsTranscript);
@@ -156,6 +163,8 @@ interface AwsTranscriptAlternative {
   
       let nextSpeakerIndex: number = parseInt(awsNextItem.speaker_label.substring(4));
       let awsItemIndex: number = 0;
+      let isAfterPunctuation = true;
+      let isSentenceStart = true;
       do {
           awsCurrentItem = awsNextItem;
           icCurrentWord = { content: "", end_time: 0, start_time: 0};
@@ -175,13 +184,26 @@ interface AwsTranscriptAlternative {
                   console.log("WARNING: Two punctuations in a row.")
               }
           }
-          
+
           // Copy the required properties from awsCurrentItem to icCurrentWord
           icCurrentWord.content = awsCurrentItem.alternatives[0].content;
           if (awsCurrentItem.type == "pronunciation") {
               icCurrentWord.confidence = awsCurrentItem.alternatives[0].confidence ? parseFloat(awsCurrentItem.alternatives[0].confidence) : 0.999;
               icCurrentWord.start_time = parseFloat(awsCurrentItem.start_time);
               icCurrentWord.end_time = parseFloat(awsCurrentItem.end_time);
+
+              if ( fillerWords.includes(icCurrentWord.content.toLowerCase()) ) {
+                // Mark this as a filler word
+                icCurrentWord.filler = true;
+              }
+              else {
+                if ( isSentenceStart && isLowerCase(icCurrentWord.content) ) {
+                    icCurrentWord.content = icCurrentWord.content;
+                    icCurrentWord.capitalize = true;
+                }
+                isSentenceStart = false;
+                isAfterPunctuation = false;
+            }
           }
           else {
             // TODO start_time and end_time are optional
@@ -189,6 +211,17 @@ interface AwsTranscriptAlternative {
             delete icCurrentWord['start_time'];
             // @ts-ignore
             delete icCurrentWord['end_time'];
+
+            if ( isAfterPunctuation ) {
+                // If filler words are being removed, then so should this punctuation
+                // because there have been no non-filler words since the last punctuation,
+                icCurrentWord.filler = true;
+            }
+            isAfterPunctuation = true;
+
+            if ( ['.', '?', '!'].includes(icCurrentWord.content) ) {
+                isSentenceStart = true;
+            }
           }
   
           // Add the word to the array

@@ -9,8 +9,10 @@ export interface TranscriptWord {
     content: string;
     end_time: number; // ?
     start_time: number; // ?
+    filler?: boolean;
+    capitalize?: boolean;
   }
-  
+
   export interface TranscriptLine {
     speaker: number;
     words: Array<TranscriptWord>;

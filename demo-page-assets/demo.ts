@@ -5,10 +5,13 @@
 // import { TranscriptSchema, TranscriptLine, TranscriptWord } from "../src/types";
 // import { secondsToHms, wordBackgroundColor, htmlEncode } from "../src/utilities";
 // import { awsToIcLines, icTranscriptToTextLines, TranscriptTextLine } from "../src/index";
+import { AwsTranscript } from "../dist/awsToIcLines";
 import { TranscriptSchema, TranscriptLine, TranscriptWord ,
      secondsToHms, wordBackgroundColor, htmlEncode,
      awsToIcLines, icTranscriptToTextLines, TranscriptTextLine } from "../src/index";
 import './style.pcss';
+
+let icTranscript: TranscriptSchema;
 
 type EventHandler = (event: Event) => void;
 const prefix = "ic";
@@ -20,34 +23,56 @@ function attachButton(id: string, eventHandler: EventHandler) : void {
     }    
 }
 
-function renderWords(words: Array<TranscriptWord>) {
+function attachChange(id: string, eventHandler: EventHandler) {
+    let element = document.getElementById(prefix + id);
+    if (element) {
+      element.addEventListener("change", eventHandler);
+    }
+}
+
+function renderWords(words: Array<TranscriptWord>, isFiller: boolean = true, isColor: boolean = true) {
     let html: string = '';
-    let backgroundColor: string;
     for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
-        let word: TranscriptWord = words[wordIndex];
+        let icWord: TranscriptWord = words[wordIndex];
         //console.log(`${this.currentLine}-${wordIndex} '${word.content}' colour=${this.getBackgroundColor(this.currentLine, wordIndex)}`)
-        html += ( word.start_time !== undefined ? ' ' : '');
-        backgroundColor = wordBackgroundColor(word);
-        if (backgroundColor != "") {
-            // id="${prefix}-word-${wordIndex}" 
-            html += `<span style='background-color: ${backgroundColor}'>${htmlEncode(word.content)}</span>`
-        }
-        else {
-            html += htmlEncode(word.content);
+        if (isFiller == true || icWord.filler === undefined) {
+            html += ( icWord.start_time !== undefined ? ' ' : '');
+            let content = icWord.content;
+            if (!isFiller && icWord.capitalize === true ) {
+                content = content.charAt(0).toUpperCase() + content.slice(1);
+            }
+            content = htmlEncode(content);
+            let backgroundColor = '';
+            if (isColor) {
+                 backgroundColor = wordBackgroundColor(icWord);
+            }
+            if (isColor && backgroundColor != "") {
+                // id="${prefix}-word-${wordIndex}" 
+                html += `<span style='background-color: ${backgroundColor}'>${content}</span>`
+            }
+            else {
+                html += content;
+            }
         }
     }
     return html;
 }
 
-function renderTranscript(icTranscript) {
-    console.log(icTranscript)
+function renderTranscript(icTranscript, isFiller: boolean = true, isColor: boolean = true) {
     const container = document.getElementById(prefix + '-line');
     if (container) {
         let html: string = '';
 
         for (let lineIndex = 0; lineIndex < icTranscript.lines.length; lineIndex++) {
             const icLine: TranscriptLine = icTranscript.lines[lineIndex];
-            html += '<p>' + htmlEncode(secondsToHms(icLine.words[0].start_time) + ' ' + icTranscript.speakers[icLine.speaker] + ': ') + renderWords(icLine.words) + '</p>';
+            html += '<p>'
+                + htmlEncode(
+                    secondsToHms(icLine.words[0].start_time)
+                    + ' '
+                    + icTranscript.speakers[icLine.speaker]
+                )
+                + ': '
+                + renderWords(icLine.words, isFiller, isColor) + '</p>';
         }
 
         container.innerHTML = html;
@@ -66,15 +91,29 @@ function renderLines(textLines: Array<TranscriptTextLine>) {
     }
 }
 
-async function load(url: string) {
-    // Get the HTTP response
-    const response = await window.fetch(url);
-    // Convert the response to an object
-    const object = await response.json();
-    let icTranscript: TranscriptSchema;
-    if ( "accountId" in object ) {
+function render() {
+    let el = document.getElementById(prefix + "-filler") as HTMLInputElement;
+    const isFiller: boolean = el.checked;
+    el = document.getElementById(prefix + "-color") as HTMLInputElement;
+    const isColor: boolean = el.checked;
+    console.log(`isFiller=${isFiller} isColor=${isColor}`);
+
+    // Use icTranscriptToTextLines to bake the transcript data structure into text that's easy to render
+    renderLines(icTranscriptToTextLines(icTranscript, isFiller));
+
+    // Render the transcript data structure directly
+    renderTranscript(icTranscript, isFiller, isColor);
+}
+
+// User Defined Type Guard for AwsTranscript
+function isAwsTranscript(arg: any): arg is AwsTranscript {
+    return "accountId" in arg;
+}
+
+async function loadObject(object: object) {
+    if ( isAwsTranscript(object) ) {
         // Looks like an AWS transcript
-        icTranscript = { url: url, speakers: [], lines: [] };
+        icTranscript = { url: "", speakers: [], lines: [] };
         const result = awsToIcLines(object);
         if (result instanceof Error) {
             console.log(result.message);
@@ -87,20 +126,49 @@ async function load(url: string) {
         icTranscript = object as TranscriptSchema;
     }
 
-    // Use icTranscriptToTextLines to bake the transcript data structure into text that's easy to render
-    renderLines(icTranscriptToTextLines(icTranscript));
+    render();
+}
 
-    // Render the transcript data structure directly
-    //renderTranscript(icTranscript);
+
+async function loadUrl(url: string) {
+    // Get the HTTP response
+    const response = await window.fetch(url);
+    // Convert the response to an object
+    const object = await response.json();
+    loadObject(object);
+}
+
+async function loadString(transcript: string) {
+    loadObject(JSON.parse(transcript));
 }
 
 const handleLoadButtonClick = async (event: Event) => {
     if (event.type === "click") {
       const el = document.getElementById(prefix + "-transcript-url") as HTMLInputElement;
       if (el) {
-        load(el.value);
+        loadUrl(el.value);
       }
     }
+}
+
+const handleChangeSettings = (event: Event) : void => {
+    render();
+}
+
+const handleChangeFile = (event: Event) : void => {
+    console.log("ha");
+    const el = event.target as HTMLInputElement;
+    const files = el.files as FileList;
+    const file = files[0];
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const contents = e.target?.result as string;
+      loadString(contents);
+    };
+    reader.readAsText(file);
 }
 
 function attach() {
@@ -110,10 +178,13 @@ function attach() {
     const el = document.getElementById(prefix + "-transcript-url") as HTMLInputElement;
     if (el && url) {
         el.value = url;
-        load(url);
+        loadUrl(url);
     }
 
     attachButton("-load", handleLoadButtonClick);
+    attachChange("-filler", handleChangeSettings);
+    attachChange("-color", handleChangeSettings);
+    attachChange("-file", handleChangeFile);
 }
 
 attach();

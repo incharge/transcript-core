@@ -4,7 +4,7 @@ import { TranscriptSchema, TranscriptLine, TranscriptWord, TranscriptTextLine } 
 import { secondsToHms } from "./utilities"
 
 // Given an ic transcript, return an aray of TranscriptTextLine
-export function icTranscriptToTextLines(transcript: TranscriptSchema): Array<TranscriptTextLine> {
+export function icTranscriptToTextLines(transcript: TranscriptSchema, isFiller: boolean = true): Array<TranscriptTextLine> {
     const textLines: Array<TranscriptTextLine> = [];
 
     const icLines = transcript.lines;
@@ -14,9 +14,10 @@ export function icTranscriptToTextLines(transcript: TranscriptSchema): Array<Tra
         let textWords: string = "";
         for (let icWordNo = 0; icWordNo < icWords.length; icWordNo++) {
             const icWord: TranscriptWord = icWords[icWordNo];
-            const fillerWords: Array<string> = ["um", "uh", "mhm"];
-            if (!fillerWords.includes(icWord.content))
-              textWords += (textWords.length > 0 && icWord.start_time ? " " : '') + icWord.content;
+            if (isFiller || icWord.filler === undefined) {
+              textWords += (textWords.length > 0 && icWord.start_time ? " " : '')
+                + (icWord.capitalize === undefined ? icWord.content: icWord.content.toUpperCase() );
+            }
         };
         textLines.push({
             start_time: secondsToHms(icWords[0].start_time),
