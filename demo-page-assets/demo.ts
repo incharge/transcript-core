@@ -1,14 +1,14 @@
-// Path: demo-page-assets/demo.ts
-// This is the entry point for the demo page. It's a TypeScript file that
-// loads in the module that we're buidling with this repo
-
-// import { TranscriptSchema, TranscriptLine, TranscriptWord } from "../src/types";
+// When developing this demo alongside transcript-core, import directly to avoid needing to build
+// import { TranscriptSchema, TranscriptLine, TranscriptWord, TranscriptTextLine } from "../src/types";
 // import { secondsToHms, wordBackgroundColor, htmlEncode } from "../src/utilities";
-// import { awsToIcLines, icTranscriptToTextLines, TranscriptTextLine } from "../src/index";
-import { AwsTranscript } from "../dist/awsToIcLines";
+// import { isAwsTranscript, awsToIcLines } from "../src/awsToIcLines";
+// import { icTranscriptToTextLines } from "../src/icToTextLines";
+
+// When adapting this demo outside transcript-core, import from the package
 import { TranscriptSchema, TranscriptLine, TranscriptWord ,
      secondsToHms, wordBackgroundColor, htmlEncode,
-     awsToIcLines, icTranscriptToTextLines, TranscriptTextLine } from "../src/index";
+     isAwsTranscript, awsToIcLines, icTranscriptToTextLines, TranscriptTextLine } from "../src/index";
+
 import './style.pcss';
 
 let icTranscript: TranscriptSchema;
@@ -105,10 +105,6 @@ function render() {
     renderTranscript(icTranscript, isFiller, isColor);
 }
 
-// User Defined Type Guard for AwsTranscript
-function isAwsTranscript(arg: any): arg is AwsTranscript {
-    return "accountId" in arg;
-}
 
 async function loadObject(object: object) {
     if ( isAwsTranscript(object) ) {

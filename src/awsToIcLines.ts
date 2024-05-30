@@ -19,6 +19,12 @@ interface AwsTranscriptAlternative {
       results: AwsResults;
   }
   
+  // User Defined Type Guard for AwsTranscript
+// See https://medium.com/@djoepramono/how-to-validate-javascript-object-better-with-typescript-e43314d97f9c
+export function isAwsTranscript(arg: any): arg is AwsTranscript {
+    return "accountId" in arg;
+}
+
   // Check that the object has all the required properties.
   // Note: Any additional properties are quietly ignored, so there's no reason to check for them.
   // Optional parametera must be checked in the code, so there's no reason to check them either.
