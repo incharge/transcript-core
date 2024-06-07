@@ -38,11 +38,7 @@ function secondsToHms(time) {
   }
   return new Date(Math.floor(time) * 1e3).toISOString().substring(from, 19);
 }
-const fs = new Proxy({}, {
-  get(_, key) {
-    throw new Error(`Module "node:fs/promises" has been externalized for browser compatibility. Cannot access "node:fs/promises.${key}" in client code.  See https://vitejs.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.`);
-  }
-});
+const fs = {};
 function isAwsTranscript(arg) {
   return "accountId" in arg;
 }
