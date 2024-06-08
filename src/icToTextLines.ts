@@ -1,6 +1,6 @@
 // import * as fs from 'fs';
 import fs from 'node:fs/promises';
-import { TranscriptSchema, TranscriptLine, TranscriptWord, TranscriptTextLine } from "./types"
+import { type TranscriptSchema, type TranscriptLine, type TranscriptWord, type TranscriptTextLine } from "./types"
 import { secondsToHms } from "./utilities"
 
 // Given an ic transcript, return an aray of TranscriptTextLine
