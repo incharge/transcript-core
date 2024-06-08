@@ -170,10 +170,20 @@ const handleChangeFile = (event: Event) : void => {
 function attach() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const url = urlParams.get("url");
+    let url = urlParams.get("url");
     const el = document.getElementById(prefix + "-transcript-url") as HTMLInputElement;
-    if (el && url) {
-        el.value = url;
+    if (el) {
+        // There's a url field, so get/set the URL.
+        if (url) {
+            // Overwrite the default value with the parameter
+            el.value = url;
+        }
+        else if (el.value) {
+            // Use the default value
+            url = el.value;
+        }
+    }
+    if (url) {
         loadUrl(url);
     }
 
