@@ -24,7 +24,7 @@ export default defineConfig({
                     'src/harness.ts'
                 ),
             ],
-            name: 'transcript-proofreader',
+            name: 'transcript-core',
             format: ['es', 'umd'],
             fileName: (format,filename) =>
                 `${filename}.${format}.js`,

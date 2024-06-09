@@ -20,16 +20,16 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "compile": "tsc && tsc -p tsconfig-cjs.json",
+    "compile-no": "tsc && tsc -p tsconfig-cjs.json",
     "prepublishOnly": "npm run clean && npm run build",
     "link": "npm link",
-    "watch": "npx nodemon -e ts --watch src --exec \"npm run compile\" && exit 1",
-    "watch-harness": "npx nodemon -e ts --watch src --exec \"tsc src/harness.ts && node src/harness.js\" && exit 1",
     "test": "vitest --ui",
     "dev": "vite --host 0.0.0.0 --port 8888",
     "vite-build": "vite build --config vite.demo.config.js",
     "build": "vite build --config vite.demo.config.js && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "watch": "npx nodemon -e ts --watch src --exec \"npm run build\" && exit 1",
+    "watch-harness": "npx nodemon -e ts --watch src --exec \"tsc src/harness.ts && node src/harness.js\" && exit 1"
   },
   "repository": {
     "type": "git",
