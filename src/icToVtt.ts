@@ -8,7 +8,7 @@ export function secondsToVttTime(time: number): string {
 // Given an ic transcript, return a vtt
 export function icToVtt(transcript: TranscriptSchema, isFiller: boolean = true): string {
     let vtt: string = 'WEBVTT\n\n';
-    const wordLimit: number = 5;
+    const wordLimit: number = 9;
     const icLines = transcript.lines;
     let lineCount: number = 1;
     let start_time: number = 0;
