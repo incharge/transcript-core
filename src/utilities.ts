@@ -10,12 +10,16 @@ export function htmlEncode(input: string): string {
 export function wordBackgroundColor(word: TranscriptWord, isCurrent: boolean = false) : string {
     let confidence: number = word.confidence || 0.99;
     if (isCurrent) {
-      // Higlight the current word
+      // Highlight the current word
       return "#FFFF33";
     }
     else if (word.filler === true) {
-      // Higlight filler word
+      // Filler word are gray
       return "#cccccc";
+    }
+    else if ( confidence == 1) {
+      // Corrected words are green
+      return '#00ff00';
     }
     else if ( word.start_time === undefined || confidence > 0.99) {
       // Punctuation has no start_time and no confidence property, so can't be color-coded
