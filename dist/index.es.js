@@ -13,6 +13,8 @@ function wordBackgroundColor(word, isCurrent = false) {
     return "#FFFF33";
   } else if (word.filler === true) {
     return "#cccccc";
+  } else if (confidence == 1) {
+    return "#00ff00";
   } else if (word.start_time === void 0 || confidence > 0.99) {
     return "";
   } else {
