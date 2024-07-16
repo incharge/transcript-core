@@ -253,7 +253,7 @@ function secondsToVttTime(time) {
 }
 function icToVtt(transcript, isFiller = true) {
   let vtt = "WEBVTT\n\n";
-  const wordLimit = 5;
+  const wordLimit = 9;
   const icLines = transcript.lines;
   let lineCount = 1;
   let start_time = 0;
